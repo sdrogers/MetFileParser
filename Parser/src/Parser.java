@@ -1,8 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
-//A comment
-//another comment
-//A comment whilst ronan is here
+
 public class Parser {
 
 
@@ -34,14 +32,15 @@ public class Parser {
 		return peaks;
 	}
 	
-	public static ArrayList<Peak> readMultiple(String listName) {
+	public static ArrayList<Peak> readMultiple(String path) {
 		ArrayList<Peak> allPeaks = new ArrayList<Peak>();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(listName));
+			String fname = path + "fileList.txt";
+			BufferedReader reader = new BufferedReader(new FileReader(fname));
 			String line;
 			while((line = reader.readLine())!=null) {
-				System.out.println("../" + line);
-				allPeaks.add(ParseFile("../" + line));
+				System.out.println(path + line);
+				allPeaks.add(ParseFile(path + line));
 			}
 			reader.close();
 		} catch(IOException e) {
@@ -76,7 +75,22 @@ public class Parser {
 			String headers = "ID";
 			for(int i=0;i<p.size();i++) {
 				//System.out.println(p.get(i).getMeta());
-				headers += "," + i;
+				String temp = p.get(i).getMeta();
+				if(temp.contains("cases")) {
+					headers += "," + 1;
+				} else {
+					headers += "," + 0;
+				}
+			}
+			writer.write(headers + "\n");
+			headers = "ID";
+			for(int i=0;i<p.size();i++) {
+				String temp = p.get(i).getMeta();
+				if(temp.contains("28_weeks")) {
+					headers += "," + 1;
+				} else {
+					headers += "," + 0;
+				}
 			}
 			writer.write(headers + "\n");
 			for(int i=0;i<ID.size();i++){
@@ -102,9 +116,12 @@ public class Parser {
 	public static void main(String[] args)
 	{
 		System.out.println(args.length);
+		String path = args[0];
 		//Peak p = ParseFile("../data_28_weeks_controls_Q00225_3_NEGATIVE.csv");
-		ArrayList<Peak> p = readMultiple("../fileList.txt");
+		String fname = path + "fileList.txt";
+		System.out.println(fname);
+		ArrayList<Peak> p = readMultiple(path);
 		ArrayList<Integer> ID = createGlobalID(p);
-		writeFile(p,ID,"test.csv");
+		writeFile(p,ID,"/Users/simonrogers/Dropbox/Meta_clustering/Human_PE/Positive_processed.csv");
 	}
 }
